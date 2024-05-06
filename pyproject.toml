@@ -14,7 +14,7 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "License :: OSI Approved :: MIT License",
 ]
-name = "tbd"
+name = "matllm"
 description = "tbd"
 version = "0.1.0"
 readme = "README.md"
