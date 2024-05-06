@@ -1,17 +1,17 @@
 [build-system]
-requires = ["setuptools>=61.0.0", "setuptools-scm>=8.0"]
+requires = [
+    "setuptools>=61.0.0",
+    "setuptools-scm>=8.0",
+]
 build-backend = "setuptools.build_meta"
 
 [project]
 classifiers = [
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
-  "Programming Language :: Python",
-  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
   "License :: OSI Approved :: MIT License",
 ]
 name = "matllm"
@@ -19,69 +19,60 @@ description = "tbd"
 version = "0.1.0"
 readme = "README.md"
 requires-python = ">=3.9"
-authors = [{ name = "John Doe", email = "john.doe@physik.hu-berlin.de" }]
+authors = [
+    { name = "Sarthak Kapoor", email = "sarthak.kapoor@physik.hu-berlin.de" },
+    { name = "Jose M. Pizarro", email = "jose.pizarro@physik.hu-berlin.de" },
+    { name = "Vikrant Chaudhary", email = "vikrant.chaudhary@physik.hu-berlin.de" },
+    { name = "Ahmed Ilyas", email = "ahmed.ilyas@physik.hu-berlin.de" },
+    { name = "Alvin Noe Ladines", email = "ladinesa@physik.hu-berlin.de" },
+]
 license = { file = "LICENSE" }
-dependencies = ["ollama"]
+dependencies = [
+  "ollama",
+  "pydantic",
+  "langchain",
+]
 
 [project.urls]
 Repository = "https://github.com/ka-sarthak/LLM-Hackathon-2024"
 
 [project.optional-dependencies]
-dev = ['ruff>=0.3.2', 'pytest']
+dev = [
+  "ruff",
+  "pytest",
+  "structlog==22.3.0",
+]
 
 [tool.ruff]
-# Exclude a variety of commonly ignored directories.
-exclude = [
-  ".bzr",
-  ".direnv",
-  ".eggs",
-  ".git",
-  ".git-rewrite",
-  ".hg",
-  ".mypy_cache",
-  ".nox",
-  ".pants.d",
-  ".pytype",
-  ".ruff_cache",
-  ".svn",
-  ".tox",
-  ".venv",
-  "__pypackages__",
-  "_build",
-  "buck-out",
-  "build",
-  "dist",
-  "node_modules",
-  "venv",
+include = ["src/matllm/*.py", "tests/*.py"]
+lint.select = [
+    "E", # pycodestyle
+    "W", # pycodestyle
+    "PL", # pylint
 ]
+lint.ignore = [
+    "E501", # Line too long ({width} > {limit} characters)
+    "E701", # Multiple statements on one line (colon)
+    "E731", # Do not assign a lambda expression, use a def
+    "E402",  # Module level import not at top of file
+    "PLR0911", # Too many return statements
+    "PLR0912", # Too many branches
+    "PLR0913", # Too many arguments in function definition
+    "PLR0915", # Too many statements
+    "PLR2004", # Magic value used instead of constant
+    "PLW0603", # Using the global statement
+    "PLW2901", # redefined-loop-name
+    "PLR1714", # consider-using-in
+    "PLR5501", # else-if-used
+]
+lint.fixable = ["ALL"]
 
 # Same as Black.
 line-length = 88
 indent-width = 4
 
-
-[tool.ruff.lint]
-select = [
-  # pycodestyle
-  "E",
-  # Pyflakes
-  "F",
-  # pyupgrade
-  "UP",
-  # isort
-  "I",
-  # pylint 
-  "PL",
-]
-
-ignore = [
-  "F403", # 'from module import *' used; unable to detect undefined names
-]
-
-fixable = ["ALL"]
-
-# Allow unused variables when underscore-prefixed.
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+# Assume Python 3.9
+target-version = "py39"
 
 # this is entirely optional, you can remove this if you wish to
 [tool.ruff.format]
