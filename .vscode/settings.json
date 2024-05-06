@@ -21,4 +21,4 @@
     "python.testing.unittestEnabled": false,
     "editor.defaultFormatter": "charliermarsh.ruff",
     "editor.formatOnSave": true
-  }
+}
