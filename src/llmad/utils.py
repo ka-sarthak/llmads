@@ -1,24 +1,8 @@
+from typing import List
+import re
+import json
 import warnings
 import magic
-
-
-def msection_to_json(section):
-    dct = section.m_to_dict()
-    json = {}
-    for quantity in dct.get('quantities', []):
-        name = quantity.get('name')
-        json.setdefault(name, {})
-        json[name]['type'] = quantity.get('type', {}).get('type_data')
-        json[name]['description'] = quantity.get('description')
-
-    for name, sub_section in section.all_sub_sections.items():
-        if name in json or section == sub_section.sub_section:
-            # prevent inf recursion
-            continue
-        d = msection_to_json(sub_section.sub_section)
-        json[name] = [d] if sub_section.repeats else d
-
-    return json
 
 
 def identify_mime_type(file_path: str) -> str:
@@ -34,3 +18,25 @@ def identify_mime_type(file_path: str) -> str:
         warnings.warn(f'No file extension found for "{file_path}".')
 
     return mime_type
+
+
+def extract_json(message: str = '') -> List[dict]:
+    """Extracts JSON content from a string where JSON is embedded between ```json and ``` tags.
+
+    Parameters:
+        message (str): The text containing the JSON content.
+
+    Returns:
+        (list): A list of extracted JSON strings.
+    """
+    # Define the regular expression pattern to match JSON blocks
+    pattern = r'```\njson(.*?)```'
+
+    # Find all non-overlapping matches of the pattern in the string
+    matches = re.findall(pattern, message, re.DOTALL)
+
+    # Return the list of matched JSON strings, stripping any leading or trailing whitespace
+    try:
+        return [json.loads(match.strip()) for match in matches]
+    except Exception:
+        raise ValueError(f'Failed to parse: {message}')
