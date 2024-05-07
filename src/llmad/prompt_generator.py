@@ -13,7 +13,7 @@ class PromptGeneratorInput(BaseModel):
     This class contains the input parameters for the prompt generator.
     """
 
-    nomad_schema_paths: List[str]
+    nomad_schema_path: str
     raw_data_file_paths: List[str]
 
 
@@ -30,15 +30,15 @@ class PromptGenerator:
         data_content = PromptGenerator.read_raw_data_files(
             prompt_input.raw_data_file_paths
         )
-        data_content = ' '.join(data_content)
-        nomad_prompts = PromptGenerator.prompts_from_nomad_schema(
-            prompt_input.nomad_schema_paths
+        data_content = ''.join(data_content)
+        nomad_prompts = PromptGenerator.parse_nomad_schema(
+            prompt_input.nomad_schema_path
         )
         for nomad_prompt in nomad_prompts:
             prompt = (
-                'You are a scrupulous file reader. Based on the following text, '
-                f'return the appropriate value of {nomad_prompt}. '
-                'If value is not found, say "Not Found".\n\n'
+                'You are a scrupulous file reader. Search the following document text and'
+                f'for the value of {nomad_prompt}. Only return the value of the quantity.'
+                'If value is not found, return "Not Found".\n\n'
             )
             prompt += data_content
             yield prompt
@@ -66,18 +66,6 @@ class PromptGenerator:
             data_content.append(document_list[0].page_content)
 
         return data_content
-
-    @staticmethod
-    def prompts_from_nomad_schema(file_paths):
-        """
-        Create a list of prompts from multiple NOMAD schemas.
-        """
-        nomad_prompts = []
-
-        for file_path in file_paths:
-            nomad_prompts.extend(PromptGenerator.parse_nomad_schema(file_path))
-
-        return nomad_prompts
 
     @staticmethod
     def parse_nomad_schema(file_path):
