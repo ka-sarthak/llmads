@@ -32,6 +32,9 @@ dependencies = [
     "langchain-community",
     "langchain-chroma",
     "python-magic",
+    "nomad-lab@git+https://github.com/nomad-coe/nomad.git@develop",
+    "nomad-schema-plugin-simulation-data@git+https://github.com/nomad-coe/nomad-schema-plugin-simulation-data.git@develop",
+    "tiktoken",
 ]
 
 [project.urls]
