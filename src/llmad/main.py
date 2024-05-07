@@ -1,7 +1,4 @@
-from langchain_community.llms import Ollama
-
-llm = Ollama(model='llama3:70b')
-llm.base_url = 'http://172.28.105.30/backend'
+from llmad.llm_model import llm
 
 response = llm.invoke('Tell me a joke')
 
