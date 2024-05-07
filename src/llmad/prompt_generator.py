@@ -70,45 +70,24 @@ class PromptGenerator:
     @staticmethod
     def prompts_from_nomad_schema(file_paths):
         """
-        This method reads and transforms a NOMAD file.
+        Create a list of prompts from multiple NOMAD schemas.
         """
         nomad_prompts = []
 
         for file_path in file_paths:
-            nomad_prompts.extend(
-                PromptGenerator.read_and_transform_nomad_schema(file_path)
-            )
+            nomad_prompts.extend(PromptGenerator.parse_nomad_schema(file_path))
 
         return nomad_prompts
 
     @staticmethod
-    def read_and_transform_data(file_paths):
-        """
-        This method prepares `str` from raw data files. Based on the file type, the
-        file is read, transformed, and appended to the `data_content`.
-        """
-        data_content = ''
-
-        for file_path in file_paths:
-            file_type = identify_file_type(file_path)
-            if not file_type:
-                continue
-            if identify_file_type(file_path) == 'xml':
-                data_content += '\n' + PromptGenerator.read_and_transform_xml(file_path)
-
-        return data_content
-
-    @staticmethod
-    def read_and_transform_nomad_schema(file_path):
+    def parse_nomad_schema(file_path):
         """
         This method reads and transforms a NOMAD schema file. For each quantity in the
         schema, a prompt is generated, and appended to `prompt_list`.
         """
-        # TODO
+        prompt_list = []
 
-    @staticmethod
-    def read_and_transform_xml(file_path):
-        """
-        This method reads and transforms an XML file.
-        """
-        # TODO directly pass as a string
+        # TODO based on the schema, generate strings of the quantity names
+        prompt_list.append('Program Name')
+
+        return prompt_list
