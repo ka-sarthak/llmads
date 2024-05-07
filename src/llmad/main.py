@@ -8,6 +8,7 @@ from langchain.output_parsers.pydantic import PydanticOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 
 from llmad.llm_model import llm, Casting
+# from llmad.simulation_model import yaml_schema
 
 
 def prompt_query(
@@ -26,6 +27,7 @@ def prompt_query(
     """
     if schema is None:
         raise ValueError('`schema` must be provided to be a defined `BaseModel`.')
+    # improve this with our own NOMADOutputParser (and `get_format_instructions()` method)
     parser = PydanticOutputParser(pydantic_object=schema)
     prompt = ChatPromptTemplate.from_messages(
         [
@@ -42,6 +44,9 @@ def prompt_query(
     except Exception:
         return None
 
+
+# f = open('/home/josepizarro/LLM-Hackathon-2024/tests/data/example.out', 'r')
+# text = f.read()
 
 question = 'What is the casting of Star Wars the first episode?'
 query = llm.invoke(question)
