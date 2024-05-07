@@ -11,6 +11,3 @@ python3.9 -m venv .pyenv
 source .pyenv/bin/activate
 pip install -e .[dev]
 ```
-
-> [!NOTE]
-> Make sure your Python version is >=3.9
