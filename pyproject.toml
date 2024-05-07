@@ -13,7 +13,7 @@ classifiers = [
 ]
 name = "llmad"
 description = "A NOMAD project for implementing LLMs (using LLAMA3) to parse input and output files into the NOMAD structure schemas."
-version = "0.1.0"
+dynamic = ["version"]
 readme = "README.md"
 requires-python = ">=3.9"
 authors = [
