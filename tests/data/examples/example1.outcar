@@ -1,0 +1,34 @@
+ vasp.5.3.2 13Sep12 (build Apr 01 2013 09:32:17) complex
+
+ executed on             LinuxIFC date 2013.09.06  21:12:21
+ serial version
+
+
+--------------------------------------------------------------------------------------------------------
+
+
+ INCAR:
+ POTCAR:  PAW_PBE Ac 06Sep2000
+ POTCAR:  PAW_PBE Ag 06Sep2000
+ POTCAR:  PAW_PBE Ac 06Sep2000
+   VRHFIN =Ac:
+   LEXCH  = PE
+   EATOM  =   812.3392 eV,   59.7052 Ry
+
+   TITEL  = PAW_PBE Ac 06Sep2000
+   LULTRA =        F    use ultrasoft PP ?
+   IUNSCR =        1    unscreen: 0-lin 1-nonlin 2-no
+   RPACOR =    2.000    partial core radius
+   POMASS =  227.028; ZVAL   =   11.000    mass and valenz
+   RCORE  =    2.900    outmost cutoff radius
+   RWIGS  =    2.900; RWIGS  =    1.535    wigner-seitz radius (au A)
+   ENMAX  =  172.237; ENMIN  =  129.178 eV
+   RCLOC  =    2.010    cutoff for local pot
+   LCOR   =        T    correct aug charges
+   LPAW   =        T    paw PP
+   EAUG   =  543.281
+   DEXC   =    -.001
+   RMAX   =    3.513    core radius for proj-oper
+   RAUG   =    1.300    factor for augmentation sphere
+   RDEP   =    2.904    radius for radial grids
+   QCUT   =   -3.558; QGAM   =    7.116    optimization parameters
