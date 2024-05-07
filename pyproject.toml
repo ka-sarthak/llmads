@@ -1,18 +1,15 @@
 [build-system]
-requires = [
-    "setuptools>=61.0.0",
-    "setuptools-scm>=8.0",
-]
+requires = ["setuptools>=61.0.0", "setuptools-scm>=8.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 classifiers = [
-  "Intended Audience :: Developers",
-  "Operating System :: OS Independent",
-  "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.9",
-  "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "License :: OSI Approved :: MIT License",
 ]
 name = "llmad"
 description = "A NOMAD project for implementing LLMs (using LLAMA3) to parse input and output files into the NOMAD structure schemas."
@@ -28,33 +25,31 @@ authors = [
 ]
 license = { file = "LICENSE" }
 dependencies = [
-  "ollama",
-  "pydantic",
-  "langchain",
+    "ollama",
+    "pydantic",
+    "langchain",
+    "langchain-core",
+    "langchain-community",
 ]
 
 [project.urls]
 Repository = "https://github.com/ka-sarthak/LLM-Hackathon-2024"
 
 [project.optional-dependencies]
-dev = [
-  "ruff",
-  "pytest",
-  "structlog==22.3.0",
-]
+dev = ["ruff", "pytest", "structlog==22.3.0"]
 
 [tool.ruff]
 include = ["src/llmad/*.py", "tests/*.py"]
 lint.select = [
-    "E", # pycodestyle
-    "W", # pycodestyle
+    "E",  # pycodestyle
+    "W",  # pycodestyle
     "PL", # pylint
 ]
 lint.ignore = [
-    "E501", # Line too long ({width} > {limit} characters)
-    "E701", # Multiple statements on one line (colon)
-    "E731", # Do not assign a lambda expression, use a def
-    "E402",  # Module level import not at top of file
+    "E501",    # Line too long ({width} > {limit} characters)
+    "E701",    # Multiple statements on one line (colon)
+    "E731",    # Do not assign a lambda expression, use a def
+    "E402",    # Module level import not at top of file
     "PLR0911", # Too many return statements
     "PLR0912", # Too many branches
     "PLR0913", # Too many arguments in function definition
@@ -91,3 +86,4 @@ line-ending = "auto"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
