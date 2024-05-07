@@ -23,7 +23,7 @@ class PromptGenerator:
     """
 
     @staticmethod
-    def yield_prompt(prompt_input: PromptGeneratorInput):
+    def generate(prompt_input: PromptGeneratorInput):
         """
         This method generates one prompt for each quantity.
         """
@@ -31,17 +31,28 @@ class PromptGenerator:
             prompt_input.raw_data_file_paths
         )
         data_content = ''.join(data_content)
-        nomad_prompts = PromptGenerator.parse_nomad_schema(
+
+        context_and_raw_data = (
+            'You are a scrupulous file reader. Read the following text containing raw '
+            f'data: \n\n{data_content}.\n\n Based on this text, answer the following.'
+        )
+
+        prompt_questions = []
+        nomad_quantities = PromptGenerator.parse_nomad_schema(
             prompt_input.nomad_schema_path
         )
-        for nomad_prompt in nomad_prompts:
+        for nomad_quantity in nomad_quantities:
             prompt = (
-                'You are a scrupulous file reader. Search the following document text and'
-                f'for the value of {nomad_prompt}. Only return the value of the quantity.'
-                'If value is not found, return "Not Found".\n\n'
+                f'What is the value of {nomad_quantity}. '
+                'Only return the value of the quantity. '
+                'If value is not found, say "None".\n\n'
             )
-            prompt += data_content
-            yield prompt
+            prompt_questions.append(prompt)
+
+        return {
+            'context_and_raw_data': context_and_raw_data,
+            'prompt_questions': prompt_questions,
+        }
 
     @staticmethod
     def read_raw_data_files(file_paths):

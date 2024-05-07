@@ -6,5 +6,6 @@ def test_prompt_generator():
         nomad_schema_path='tests/data/test_schema.archive.yaml',
         raw_data_file_paths=['tests/data/Si2_crystal_VASP/OUTCAR'],
     )
-    for prompt in PromptGenerator.yield_prompt(prompt_input):
-        assert isinstance(prompt, str)
+    prompt_dict = PromptGenerator.generate(prompt_input)
+    assert isinstance(prompt_dict['context_and_raw_data'], str)
+    assert isinstance(prompt_dict['prompt_questions'], list)
