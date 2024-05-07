@@ -7,7 +7,7 @@ package with its `dev` dependencies in editable mode. The following commands can
 for this.
 
 ```sh
-python3 -m venv .pyenv
+python3.9 -m venv .pyenv
 source .pyenv/bin/activate
 pip install -e .[dev]
 ```
