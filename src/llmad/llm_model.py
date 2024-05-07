@@ -1,29 +1,23 @@
-from typing import Optional, List
-
-from langchain_core.pydantic_v1 import BaseModel, Field
-from langchain_community.llms.ollama import Ollama
-
-llm = Ollama(model='llama3:70b')
-llm.base_url = 'http://172.28.105.30/backend'
+from nomad_simulations import Simulation, Program
 
 
-class Actor(BaseModel):
-    """
-    Information about the actor appearing as a character in the movie.
-    """
+def msection_to_json(section):
+    dct = section.m_to_dict()
+    msection_dict = {}
+    for quantity in dct.get('quantities', []):
+        name = quantity.get('name')
+        msection_dict.setdefault(name, {})
+        msection_dict[name]['type'] = quantity.get('type', {}).get('type_data')
+        msection_dict[name]['description'] = quantity.get('description')
 
-    name: Optional[str] = Field(..., description='The name of the actor.')
-    role: Optional[str] = Field(
-        ..., description='The name of the character that the actor interpreted.'
-    )
+    for name, sub_section in section.all_sub_sections.items():
+        if name in msection_dict or section == sub_section.sub_section:
+            # prevent inf recursion
+            continue
+        d = msection_to_json(sub_section.sub_section)
+        msection_dict[name] = [d] if sub_section.repeats else d
+
+    return msection_dict
 
 
-class Casting(BaseModel):
-    """
-    Information about the casting of the movie.
-    """
-
-    # director: Optional[str] = Field(
-    #     ..., description='The name of the director of the movie.'
-    # )
-    actors: List[Actor]
+nomad_schema = msection_to_json(Simulation.m_def)
