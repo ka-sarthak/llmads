@@ -25,7 +25,6 @@ authors = [
 ]
 license = { file = "LICENSE" }
 dependencies = [
-    "ollama",
     "pydantic",
     "langchain",
     "langchain-core",
