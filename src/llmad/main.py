@@ -1,13 +1,8 @@
-import httpx
-from ollama import Client
+from langchain_community.llms import Ollama
 
-host = 'http://172.28.105.30/backend'
-model = 'llama3:70b'
+llm = Ollama(model='llama3:70b')
+llm.base_url = 'http://172.28.105.30/backend'
 
-client = Client(host=host)
-# ollama client doesn't handle the /backend properly
-client._client = httpx.Client(base_url=host, timeout=500)
+response = llm.invoke('Tell me a joke')
 
-
-response = client.generate(model=model, prompt='Why is the sky blue')
-print(response.get('response'))
+print(response)
