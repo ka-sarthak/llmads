@@ -2,7 +2,9 @@ from typing import Optional
 
 from langchain_core.pydantic_v1 import BaseModel
 from langchain_community.llms.ollama import Ollama
-from langchain.output_parsers import PydanticOutputParser
+from langchain.output_parsers.pydantic import PydanticOutputParser
+# from langchain.output_parsers.yaml import YamlOutputParser
+
 from langchain_core.prompts import ChatPromptTemplate
 
 from llmad.llm_model import llm, Casting
@@ -43,4 +45,4 @@ def prompt_query(
 
 question = 'What is the casting of Star Wars the first episode?'
 query = llm.invoke(question)
-print(prompt_query(query=query, schema=Casting, llm=llm))
+print(prompt_query(query=query))
