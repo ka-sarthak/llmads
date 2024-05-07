@@ -4,7 +4,7 @@ This module contains classes and methods for generating prompts based on the fil
 
 from typing import List
 from pydantic import BaseModel
-from llmad.utils import identify_file_type
+from llmad.utils import identify_mime_type
 
 
 class PromptGeneratorInput(BaseModel):
