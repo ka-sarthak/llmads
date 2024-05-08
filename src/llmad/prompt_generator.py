@@ -1,47 +1,95 @@
-from typing import List, Union, Optional, Any
+from typing import List, Optional, Any
+import yaml
+from pathlib import Path
+import warnings
 
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_community.document_loaders import TextLoader
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from nomad.metainfo import Section
 
 from llmad.utils import identify_mime_type, extract_json
 from llmad.llm_model import llm
-from llmad.schemas import msection_to_json, yaml_file_to_json
+from llmad.nomad_instructions import NOMAD_FORMAT_INSTRUCTIONS
 
 
-class PromptGenerator(BaseModel):
+class PromptGeneratorInput(BaseModel):
     """
-    This class contains methods for generating prompts based on the file type.
+    This class contains the input parameters for the prompt generator.
     """
 
     nomad_schema: Any = Field(
         ...,
-        description="""The specification to the NOMAD schema to be used to parsed the raw files text.""",
+        description="""The specification to the NOMAD schema to be used to parsed the raw files text. This can be a NOMAD schema object or a path to a YAML file.""",
     )
-    raw_files_paths: List[str]
+    raw_files_paths: List[str] = Field(
+        ...,
+        description="""The list of paths to the raw files.""",
+    )
 
-    @staticmethod
-    def nomad_schema_dict(schema: Union[Section, str]) -> Optional[dict]:
+    def msection_to_dict(self, section: Section = None) -> Optional[dict]:
         """
-        This method reads and transforms a NOMAD schema file. For each quantity in the
-        schema, a prompt is generated, and appended to `prompt_list`.
+        Convert a NOMAD schema section to a dictionary to be used in the prompting
+
+        Args:
+            section (Section, optional): The NOMAD section to be passed to a dictionary. Defaults to None.
+
+        Returns:
+            (Optional[dict]): The dictionary representation of the NOMAD schema.
         """
-        if isinstance(schema, Section):
-            return msection_to_json(schema)
-        elif isinstance(schema, str):
-            return yaml_file_to_json(schema)
+        if section is None:
+            return None
+        dct = section.m_to_dict()
+        msection_dict = {}
+        for quantity in dct.get('quantities', []):
+            name = quantity.get('name')
+            msection_dict.setdefault(name, {})
+            msection_dict[name]['type'] = quantity.get('type', {}).get('type_data')
+            msection_dict[name]['description'] = quantity.get('description')
+
+        for name, sub_section in section.all_sub_sections.items():
+            if name in msection_dict or section == sub_section.sub_section:
+                # prevent inf recursion
+                continue
+            d = self.msection_to_json(sub_section.sub_section)
+            msection_dict[name] = [d] if sub_section.repeats else d
+
+        return msection_dict
+
+    def yaml_file_to_dict(self, nomad_yaml_file: str = '') -> Optional[dict]:
+        """
+        Read a YAML file and return its content as a dictionary  to be used in the prompting
+
+        Args:
+            nomad_yaml_file (str, optional): The path to the NOMAD schema YAML file. Defaults to ''.
+
+        Returns:
+            (Optional[dict]): The dictionary representation of the NOMAD schema.
+        """
+        if not nomad_yaml_file:
+            return None
+        yaml_object = yaml.safe_load(Path(nomad_yaml_file).read_text())
+        return yaml_object
+
+
+class PromptGenerator(PromptGeneratorInput):
+    """
+    This class contains methods for generating prompts based on the file type.
+    """
+
+    def __init__(self) -> None:
+        self.archive = '{{"data":}}'
 
     @staticmethod
     def read_raw_files(filepath: List[str]) -> List[str]:
         """
-        This method reads the contents of the raw files and returns them as a list of strings.
+        Read the raw files and return their content as a list of strings.
 
         Args:
             filepath (List[str]): The list of paths to the raw files.
 
         Returns:
-            (List[str]): The list of strings content in the raw files.
+            (List[str]): The list of strings containing the content of the raw files.
         """
 
         HANDLER = {
@@ -61,43 +109,55 @@ class PromptGenerator(BaseModel):
 
         return content
 
-    def template(self, schema: dict) -> ChatPromptTemplate:
-        """
-        This method generates one prompt for each quantity.
-        """
+    def generate(self) -> Optional[ChatPromptTemplate]:
+        # Get the schema from 2 formats: Python section or YAML file
+        schema = {}
+        if isinstance(self.nomad_schema, Section):
+            schema = self.msection_to_dict(self.nomad_schema)
+        elif isinstance(self.nomad_schema, str):
+            schema = self.yaml_file_to_dict(self.nomad_schema)
+        if not schema:
+            warnings.warn('The schema is empty. Please provide a valid schema.')
+            return None
+
+        # Prepares the prompt from LangChain templates. We want to differentiate:
+        # 1. The `system` message that tells the LLM how to behave. It includes the `schema` to be filled in the JSON snippet.
+        # 2. The `human` message that contains the message input from the human (i.e., the input text to be processed, `self.raw_files_paths`).
+        # 3. The `examples` message that contains the examples to be filled to help the LLM to recognize proper parsing.
         prompt = ChatPromptTemplate.from_messages(
             [
                 (
                     'system',
                     'You are an expert extraction algorithm. Only extract the relevant information from the text. '
                     'If you do not know the value of an attribute asked to extract, just skip it and do not store it. '
-                    'Take into account that the schema always starts at the level of the `data` key. Thus, the JSON '
-                    'snippet should maintain this structure. For example, if the data only populates `program` and its `name`, then the '
-                    'output JSON should be: ```json\n{{"data": {{"program": {{"name": "VASP"}}}}}}\n```. If now the data is recognized to populate '
-                    'the `version as well, then the output JSON should be: ```json\n{{"data": {{"program": {{"name": "VASP", "version": "5.4"}}}}}}\n```.'
-                    'Output your answer as JSON that matches the given schema: ```json\n{schema}\n```'
-                    'Make sure to wrap the answer in ```json and ``` tags.',
+                    'You will be passed a schema template (called NOMAD schema from now on) that you must fill with the information extracted from the text. '
+                    'Here you have some instructions to follow when writing your output: \n{NOMAD_FORMAT_INSTRUCTIONS}\n',
+                    'Once you have the information extracted, give back your answer wrap as a JSON snippet in between ```json and ``` tags.',
+                    # 'Take into account that the schema always starts at the level of the `data` key. Thus, the JSON '
+                    # 'snippet should maintain this structure. For example, if the data only populates `program` and its `name`, then the '
+                    # 'output JSON should be: ```json\n{{"data": {{"program": {{"name": "VASP"}}}}}}\n```. If now the data is recognized to populate '
+                    # 'the `version` as well, then the output JSON snipped must be: ```json\n{{"data": {{"program": {{"name": "VASP", "version": "5.4"}}}}}}\n```.\n '
+                    # 'Output your answer as JSON that matches the given schema: ```json\n{schema}\n```'
+                    # 'Bear in mind that the schema is a Python object whose attributes names (keys in the JSON structure) cannot be changed. For example, the schema ```json\n{{"data": {{"program": {{"name": "VASP"}}}}}}\n``` '
+                    # 'is correct as the attributes are those for a schema defined as ```json\n{{"data": {{"program": {{"name": {{"type":}}}}}}}}\n```. The example '
+                    # '```json\n{{"data2": {{"program": {{"name": "VASP"}}}}}}\n``` is not valid because `data2` is not a valid attribute in the schema. '
+                    # 'Make sure to wrap the answer in ```json and ``` tags.',
+                    # {{archive}},
                     # 'Based on this text, answer the following: '
                 ),
+                # MessagesPlaceholder('examples'),  # <-- EXAMPLES!
                 (
                     'human',
-                    'The input to use for filling the schema is \n{input}\n '
-                    'You need a memory that in the previous step you filled the schema with the information in a previous memorized chunk in '
-                    'the previous step: {archive} (if available)',
+                    'The input to use for filling the schema is \n{input}\n ',
+                    # 'You need a memory that in the previous step you filled the schema with the information in a previous memorized chunk in '
+                    # 'the previous step: {archive} (if available)',
                 ),
             ]
-        ).partial(schema=schema)
+        ).partial(schema=schema, archive=self.archive)
+        # we extract output in JSON format
         prompt_template = prompt | llm | extract_json
         return prompt_template
 
-    def generate(self) -> ChatPromptTemplate:
-        """
-        This method generates one prompt for each quantity.
-        """
-        # raw_input = PromptGenerator.read_raw_files(self.raw_files_paths)
-        schema = PromptGenerator.nomad_schema_dict(self.nomad_schema)
-        prompt_template = self.template(schema=schema)
-        return prompt_template
-
     def update_prompt(self):
+        # self.archive = ...
         pass
