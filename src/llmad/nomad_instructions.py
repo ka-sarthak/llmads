@@ -6,6 +6,7 @@ The first key of the JSON snippet must be labeled as "data", and the schema must
     3. ```json{"data": {"program": {"name": "VASP", "version": "5.4"}}}``` is an valid output. Both the program name and version are recognized in the input text.
     4. ```json{"name": "VASP"}``` is an invalid output. The first key must be labeled as "data".
     5. ```json{"data": {"program": {"name": "VASP"}, "version": "5.4"}}}``` is an invalid output. The schema must be appearing as a nested dictionary under "data".
+    3. ```json{"data": {"program": {"name": "VASP", "version": "5.4"}, "model_system: {"dimensionality": 3}}}``` is an valid output. Both the sections program and model_system are recognized, and more sub-quantities inside those.
 
 The attributes of the schema are immutable, because they are Python class attributes. Examples:
     1. ```json{"data2": {}}``` is an invalid output. "data2" is not a valid attribute in the schema, but "data" is.
@@ -16,7 +17,9 @@ You only use the schema as a cheatsheet. Do not use other resources to name attr
     1. ```json{"data": {"program": {"name": "VASP"}}}``` is a valid output if "program_vasp" is defined in the schema.
     2. ```json{"ENTRY": {"Program_name": "VASP"}}``` is an invalid output if "ENTRY" or "Program_name" are not defined the schema.
 
-Ask for help (with text) if you think you found a key but you are unsure where to put it in the schema."""
+Do not invent new quantities if these are not defined in the schema. Examples:
+    1. ```json{"data": {"program": {"name": "VASP"}}}``` is valid. The "name" attribute is indeed defined under "program".
+    2. ```json{"data": {"program": {"author": "John Doe"}}}``` is invalid if the "author" attribute is not defined in the schema under "program"."""
 
 NOMAD_FORMAT_INSTRUCTIONS2 = """Here you have some instructions to help you prepare the output:
 

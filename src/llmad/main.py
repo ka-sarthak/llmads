@@ -1,7 +1,7 @@
 import os
 import time
 
-from nomad_simulations import Program
+from nomad_simulations import Simulation, Program
 
 from llmad.prompt_generator import PromptGenerator
 from langchain.output_parsers.json import SimpleJsonOutputParser
@@ -13,14 +13,14 @@ test_file = '../../tests/data/example.out'
 test_file_path = os.path.join(current_dir, test_file)
 
 prompt_generator = PromptGenerator(
-    nomad_schema=Program.m_def,
+    nomad_schema=Simulation.m_def,
     raw_files_paths=[test_file_path],
 )
 prompt = prompt_generator.generate()
 json_parser = SimpleJsonOutputParser()
 template = prompt | llm
 with open(os.path.join(current_dir, '../../test_llm.txt'), 'w') as file:
-    for i in range(20):
+    for i in range(10):
         start_time = time.time()
         try:
             file_content = prompt_generator.read_raw_files(

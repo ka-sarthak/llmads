@@ -53,7 +53,7 @@ class PromptGeneratorInput(BaseModel):
             if name in msection_dict or section == sub_section.sub_section:
                 # prevent inf recursion
                 continue
-            d = self.msection_to_json(sub_section.sub_section)
+            d = self.msection_to_dict(sub_section.sub_section)
             msection_dict[name] = [d] if sub_section.repeats else d
 
         return msection_dict
@@ -146,7 +146,7 @@ class PromptGenerator(PromptGeneratorInput):
                     'Only share the filled schema, no yapping.',
                 ),
             ]
-        ).partial(schema=schema, instructions=NOMAD_FORMAT_INSTRUCTIONS2)
+        ).partial(schema=schema, instructions=NOMAD_FORMAT_INSTRUCTIONS)
         # 'The NOMAD schema to fill in is: \n{schema}\n . You must work in a recursive way using the NOMAD schema as a cheatsheet to populate the NOMAD archive: \n{archive}\n ',
         # (
         #     'system',
