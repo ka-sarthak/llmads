@@ -18,5 +18,9 @@ prompt_generator = PromptGenerator(
 prompt = prompt_generator.generate()
 json_parser = SimpleJsonOutputParser()
 template = prompt | llm | json_parser
-llm_msg = template.invoke({'input': prompt_generator.raw_files_paths[0]})
-print(llm_msg)
+for i in range(10):
+    try:
+        llm_msg = template.invoke({'input': prompt_generator.raw_files_paths[0]})
+        print(i, llm_msg)
+    except Exception:
+        print(i, 'exception catched!')
