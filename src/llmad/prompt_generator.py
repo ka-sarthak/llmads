@@ -27,6 +27,14 @@ class PromptGeneratorInput(BaseModel):
         ...,
         description="""The list of paths to the raw files.""",
     )
+    archive: str = Field(
+        default='{{"data": }}',
+        description="""The JSON snippet to be filled with the extracted information from the raw files.""",
+    )
+    content: Optional[List[str]] = Field(
+        None,
+        description="""The content of the input files, or chunks of data based on input files.""",
+    )
 
     def msection_to_dict(self, section: Section = None) -> Optional[dict]:
         """
@@ -73,23 +81,22 @@ class PromptGeneratorInput(BaseModel):
         return yaml_object
 
 
-class PromptGenerator(PromptGeneratorInput):
+class PromptGenerator:
     """
     This class contains methods for generating prompts based on the file type.
     """
 
-    def __init__(self, *args, **kwargs) -> None:
-        self.archive = None
-        self.content = None
+    def __init__(self, data: PromptGeneratorInput):
         self.content_index = 0
+        self.data = data
 
     def generate(self) -> Optional[ChatPromptTemplate]:
         # Get the schema from 2 formats: Python section or YAML file
         schema = {}
-        if isinstance(self.nomad_schema, Section):
-            schema = self.msection_to_dict(self.nomad_schema)
-        elif isinstance(self.nomad_schema, str):
-            schema = self.yaml_file_to_dict(self.nomad_schema)
+        if isinstance(self.data.nomad_schema, Section):
+            schema = self.data.msection_to_dict(self.data.nomad_schema)
+        elif isinstance(self.data.nomad_schema, str):
+            schema = self.data.yaml_file_to_dict(self.data.nomad_schema)
         if not schema:
             warnings.warn('The schema is empty. Please provide a valid schema.')
             return None
@@ -133,7 +140,7 @@ class PromptGenerator(PromptGeneratorInput):
         return prompt_template
 
     def update_prompt(self, new_archive):
-        self.archive = new_archive
+        self.data.archive = new_archive
         self.content_index += 1
 
         return self.generate()
@@ -156,7 +163,7 @@ class PromptGenerator(PromptGeneratorInput):
             chunk_overlap=CHUNK_OVERLAP,
         )
 
-        content_chunks = content_splitter.create_documents(self.content)
+        content_chunks = content_splitter.create_documents(self.data.content)
 
         # transform the chunk document into a list of strings
         content_chunks_list = [chunk.page_content for chunk in content_chunks]
@@ -165,7 +172,7 @@ class PromptGenerator(PromptGeneratorInput):
 
     def read_raw_files(self) -> None:
         """
-        Read the raw files and convert them into strings. `self.content` is set as a list,
+        Read the raw files and convert them into strings. `self.data.content` is set as a list,
         where each element is a string containing the content of one raw file.
         """
 
@@ -174,7 +181,7 @@ class PromptGenerator(PromptGeneratorInput):
         }
 
         content = []
-        for file in self.raw_files_paths:
+        for file in self.data.raw_files_paths:
             mime_type = identify_mime_type(file)
             if mime_type is None:
                 continue
@@ -184,4 +191,4 @@ class PromptGenerator(PromptGeneratorInput):
             document_list = loader(file).load()
             content.append(document_list[0].page_content)
 
-        self.content = content
+        self.data.content = content
