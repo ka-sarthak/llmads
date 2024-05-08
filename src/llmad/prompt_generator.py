@@ -134,7 +134,11 @@ class PromptGenerator:
                     # 'the previous step: {archive} (if available)',
                 ),
             ]
-        ).partial(instructions=NOMAD_FORMAT_INSTRUCTIONS, schema=schema)
+        ).partial(
+            instructions=NOMAD_FORMAT_INSTRUCTIONS,
+            schema=schema,
+            input=self.data.content[self.content_index],
+        )
         # we extract output in JSON format
         prompt_template = prompt | llm | extract_json
         return prompt_template
