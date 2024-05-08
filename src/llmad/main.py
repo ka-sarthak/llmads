@@ -3,7 +3,7 @@ import os
 from nomad_simulations import Program
 
 from llmad.prompt_generator import PromptGenerator
-from llmad.utils import extract_json
+from langchain.output_parsers.json import SimpleJsonOutputParser
 from llmad.llm_model import llm
 
 
@@ -16,5 +16,7 @@ prompt_generator = PromptGenerator(
     raw_files_paths=[test_file_path],
 )
 prompt = prompt_generator.generate()
-template = prompt | llm | extract_json  # extract output in JSON format
+json_parser = SimpleJsonOutputParser()
+template = prompt | llm | json_parser
 llm_msg = template.invoke({'input': prompt_generator.raw_files_paths[0]})
+print(llm_msg)
