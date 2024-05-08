@@ -1,4 +1,4 @@
-from typing import List, Optional, Any
+from typing import Generator, List, Optional, Any
 import yaml
 from pathlib import Path
 
@@ -32,8 +32,8 @@ class PromptGeneratorInput(BaseModel):
         default='{{"data": }}',
         description="""The JSON snippet to be filled with the extracted information from the raw files.""",
     )
-    content: Optional[List[str]] = Field(
-        None,
+    content: List[str] = Field(
+        [],
         description="""The content of the input files, or chunks of data based on input files.""",
     )
 
@@ -88,10 +88,9 @@ class PromptGenerator:
     """
 
     def __init__(self, data: PromptGeneratorInput):
-        self.content_index = 0
         self.data = data
 
-    def generate(self) -> Optional[ChatPromptTemplate]:
+    def generate(self) -> Generator[ChatPromptTemplate, None, None]:
         # Get the schema from 2 formats: Python section or YAML file
         schema = {}
         if isinstance(self.data.nomad_schema, Section):
@@ -101,44 +100,40 @@ class PromptGenerator:
         if not schema:
             raise ValueError('The NOMAD schema is not valid to the covered format.')
 
-        # Prepares the prompt from LangChain templates. We want to differentiate:
-        # 1. The `system` message that tells the LLM how to behave. It includes the `schema` to be filled in the JSON snippet.
-        # 2. The `human` message that contains the message input from the human (i.e., the input text to be processed, `self.raw_files_paths`).
-        # 3. The `examples` message that contains the examples to be filled to help the LLM to recognize proper parsing.
-        prompt = ChatPromptTemplate.from_messages(
-            [
-                (
-                    'system',
-                    'You are an expert extraction algorithm. Only extract the relevant information from the text. '
-                    'If you do not know the value of an attribute asked to extract, skip it and do not return the value.'
-                    'You will be passed a schema template in JSON format that you must fill with the information extracted from the text. '
-                    'The schema to fill in is: \n```json{schema}```\n .',
-                ),
-                (
-                    'system',
-                    '\n{instructions}\n',
-                ),
-                (
-                    'human',
-                    'The input text that has to be parsed into the schema is \n{input}\n '
-                    'Only share the filled schema, no yapping.',
-                ),
-            ]
-        ).partial(
-            instructions=NOMAD_FORMAT_INSTRUCTIONS,
-            schema=schema,
-            input=self.data.content[self.content_index],
-        )
-        # we extract output in JSON format
-        return prompt
+        for chunk in self.data.content:
+            # Prepares the prompt from LangChain templates. We want to differentiate:
+            # 1. The `system` message that tells the LLM how to behave. It includes the `schema` to be filled in the JSON snippet.
+            # 2. The `human` message that contains the message input from the human (i.e., the input text to be processed, `self.raw_files_paths`).
+            # 3. The `examples` message that contains the examples to be filled to help the LLM to recognize proper parsing.
+            prompt = ChatPromptTemplate.from_messages(
+                [
+                    (
+                        'system',
+                        'You are an expert extraction algorithm. Only extract the relevant information from the text. '
+                        'If you do not know the value of an attribute asked to extract, just skip it and do not write it. '
+                        'You will be passed a schema template (called "NOMAD schema" from now on) that you must fill with the information extracted from the text. '
+                        'Once you have the information extracted, give back your answer wrap as a JSON snippet in between ```json and ``` tags, make sure to replace None with null to make it valid json. The resulting output is what we call "NOMAD archive". '
+                        'The NOMAD schema to fill in is: \n{schema}\n . You must work in a recursive way using the NOMAD schema as a cheatsheet to populate the NOMAD archive: \n{previous_archive} to make it not null\n, if the provided data is not an improvement on the previous archive, ignore the data and return the previous archive instead'
+                        'Only try to fill the archive if the extracted value is not null, otherwise keep the archive as it was in the previous archive'
+                        'Dont output anything except for the archive, not even helper information or anything else, it should only be the json archive'
+                        'You must work recursevily',
+                    ),
+                    (
+                        'system',
+                        'Here you have some instructions to understand the NOMAD schema: \n{instructions}\n ',
+                    ),
+                    (
+                        'human',
+                        'The input to use for filling the schema is \n{input}\n ',
+                    ),
+                ]
+            ).partial(
+                instructions=NOMAD_FORMAT_INSTRUCTIONS, schema=schema, input=chunk
+            )
+            # we extract output in JSON format
+            yield prompt
 
-    def update_prompt(self, new_archive):
-        self.data.archive = new_archive
-        self.content_index += 1
-
-        return self.generate()
-
-    def read_raw_files_with_chunking(self) -> List[str]:
+    def read_raw_files_with_chunking(self):
         """
         Read the raw files and split them into chunks. The raw files converted to strings
         and combined into one string. The combined string is then split into chunks.
@@ -160,8 +155,7 @@ class PromptGenerator:
 
         # transform the chunk document into a list of strings
         content_chunks_list = [chunk.page_content for chunk in content_chunks]
-
-        return content_chunks_list
+        self.data.content = content_chunks_list
 
     def read_raw_files(self) -> None:
         """
