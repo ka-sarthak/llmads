@@ -1,4 +1,5 @@
 import os
+import time
 
 from nomad_simulations import Program
 
@@ -17,10 +18,17 @@ prompt_generator = PromptGenerator(
 )
 prompt = prompt_generator.generate()
 json_parser = SimpleJsonOutputParser()
-template = prompt | llm | json_parser
-for i in range(10):
-    try:
-        llm_msg = template.invoke({'input': prompt_generator.raw_files_paths[0]})
-        print(i, llm_msg)
-    except Exception:
-        print(i, 'exception catched!')
+template = prompt | llm
+with open(os.path.join(current_dir, '../../test_llm.txt'), 'w') as file:
+    for i in range(20):
+        start_time = time.time()
+        try:
+            file_content = prompt_generator.read_raw_files(
+                prompt_generator.raw_files_paths
+            )
+            llm_msg = template.invoke({'input': file_content[0]})
+        except Exception:
+            print(i, 'exception catched!')
+        elapsed_time = time.time() - start_time
+        print(i, llm_msg, elapsed_time)
+        file.write(f'{str(elapsed_time)}, {llm_msg}')

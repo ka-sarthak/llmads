@@ -9,7 +9,10 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from nomad.metainfo import Section
 
 from llmad.utils import identify_mime_type
-from llmad.nomad_instructions import NOMAD_FORMAT_INSTRUCTIONS
+from llmad.nomad_instructions import (
+    NOMAD_FORMAT_INSTRUCTIONS,
+    NOMAD_FORMAT_INSTRUCTIONS2,
+)
 
 
 class PromptGeneratorInput(BaseModel):
@@ -129,25 +132,26 @@ class PromptGenerator(PromptGeneratorInput):
                 (
                     'system',
                     'You are an expert extraction algorithm. Only extract the relevant information from the text. '
-                    'If you do not know the value of an attribute asked to extract, just skip it and do not write it. '
-                    'You will be passed a schema template (called "NOMAD schema" from now on) that you must fill with the information extracted from the text. '
-                    'Once you have the information extracted, give back your answer wrap as a JSON snippet in between ```json and ``` tags. The resulting output is what we call "NOMAD archive". '
-                    'The NOMAD schema to fill in is: \n{schema}\n . You must work in a recursive way using the NOMAD schema as a cheatsheet to populate the NOMAD archive: \n{archive}\n '
-                    'You must work recursevily',
+                    'If you do not know the value of an attribute asked to extract, skip it and do not return the value.'
+                    'You will be passed a schema template in JSON format that you must fill with the information extracted from the text. '
+                    'The schema to fill in is: \n```json{schema}```\n .',
                 ),
                 (
                     'system',
-                    'Here you have some instructions to understand the NOMAD schema: \n{instructions}\n ',
+                    '\n{instructions}\n',
                 ),
                 (
                     'human',
-                    'The input to use for filling the schema is \n{input}\n ',
+                    'The input text that has to be parsed into the schema is \n{input}\n '
+                    'Only share the filled schema, no yapping.',
                 ),
             ]
-        ).partial(
-            schema=schema, archive=self.archive, instructions=NOMAD_FORMAT_INSTRUCTIONS
-        )
-        # 'Here you have some instructions to follow when writing your output: \n{instructions}\n'
+        ).partial(schema=schema, instructions=NOMAD_FORMAT_INSTRUCTIONS2)
+        # 'The NOMAD schema to fill in is: \n{schema}\n . You must work in a recursive way using the NOMAD schema as a cheatsheet to populate the NOMAD archive: \n{archive}\n ',
+        # (
+        #     'system',
+        #     'Here you have some instructions to understand the NOMAD schema: \n{instructions}\n ',
+        # ),
         return prompt
 
     def update_prompt(self):
