@@ -8,8 +8,7 @@ from langchain_community.document_loaders import TextLoader
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from nomad.metainfo import Section
 
-from llmad.utils import identify_mime_type, extract_json
-from llmad.llm_model import llm
+from llmad.utils import identify_mime_type
 from llmad.nomad_instructions import NOMAD_FORMAT_INSTRUCTIONS
 
 
@@ -77,8 +76,10 @@ class PromptGenerator(PromptGeneratorInput):
     This class contains methods for generating prompts based on the file type.
     """
 
-    # def __init__(self, *args, **kwargs) -> None:
-    #     self.archive = '{{"data":}}'
+    archive: str = Field(
+        default='{{"data": }}',
+        description="""The JSON snippet to be filled with the extracted information from the raw files.""",
+    )
 
     @staticmethod
     def read_raw_files(filepath: List[str]) -> List[str]:
@@ -117,8 +118,7 @@ class PromptGenerator(PromptGeneratorInput):
         elif isinstance(self.nomad_schema, str):
             schema = self.yaml_file_to_dict(self.nomad_schema)
         if not schema:
-            warnings.warn('The schema is empty. Please provide a valid schema.')
-            return None
+            raise ValueError('The NOMAD schema is not valid to the covered format.')
 
         # Prepares the prompt from LangChain templates. We want to differentiate:
         # 1. The `system` message that tells the LLM how to behave. It includes the `schema` to be filled in the JSON snippet.
@@ -129,34 +129,26 @@ class PromptGenerator(PromptGeneratorInput):
                 (
                     'system',
                     'You are an expert extraction algorithm. Only extract the relevant information from the text. '
-                    'If you do not know the value of an attribute asked to extract, just skip it and do not store it. '
-                    'You will be passed a schema template (called NOMAD schema from now on) that you must fill with the information extracted from the text. '
-                    'Here you have some instructions to follow when writing your output: \n{instructions}\n'
-                    'Once you have the information extracted, give back your answer wrap as a JSON snippet in between ```json and ``` tags.'
-                    # 'Take into account that the schema always starts at the level of the `data` key. Thus, the JSON '
-                    # 'snippet should maintain this structure. For example, if the data only populates `program` and its `name`, then the '
-                    # 'output JSON should be: ```json\n{{"data": {{"program": {{"name": "VASP"}}}}}}\n```. If now the data is recognized to populate '
-                    # 'the `version` as well, then the output JSON snipped must be: ```json\n{{"data": {{"program": {{"name": "VASP", "version": "5.4"}}}}}}\n```.\n '
-                    'Output your answer as JSON that matches the given schema: ```json\n{schema}\n```'
-                    # 'Bear in mind that the schema is a Python object whose attributes names (keys in the JSON structure) cannot be changed. For example, the schema ```json\n{{"data": {{"program": {{"name": "VASP"}}}}}}\n``` '
-                    # 'is correct as the attributes are those for a schema defined as ```json\n{{"data": {{"program": {{"name": {{"type":}}}}}}}}\n```. The example '
-                    # '```json\n{{"data2": {{"program": {{"name": "VASP"}}}}}}\n``` is not valid because `data2` is not a valid attribute in the schema. '
-                    'Make sure to wrap the answer in ```json and ``` tags.',
-                    # {{archive}},
-                    # 'Based on this text, answer the following: '
+                    'If you do not know the value of an attribute asked to extract, just skip it and do not write it. '
+                    'You will be passed a schema template (called "NOMAD schema" from now on) that you must fill with the information extracted from the text. '
+                    'Once you have the information extracted, give back your answer wrap as a JSON snippet in between ```json and ``` tags. The resulting output is what we call "NOMAD archive". '
+                    'The NOMAD schema to fill in is: \n{schema}\n . You must work in a recursive way using the NOMAD schema as a cheatsheet to populate the NOMAD archive: \n{archive}\n '
+                    'You must work recursevily',
                 ),
-                # MessagesPlaceholder('examples'),  # <-- EXAMPLES!
+                (
+                    'system',
+                    'Here you have some instructions to understand the NOMAD schema: \n{instructions}\n ',
+                ),
                 (
                     'human',
                     'The input to use for filling the schema is \n{input}\n ',
-                    # 'You need a memory that in the previous step you filled the schema with the information in a previous memorized chunk in '
-                    # 'the previous step: {archive} (if available)',
                 ),
             ]
-        ).partial(instructions=NOMAD_FORMAT_INSTRUCTIONS, schema=schema)
-        # we extract output in JSON format
-        prompt_template = prompt | llm | extract_json
-        return prompt_template
+        ).partial(
+            schema=schema, archive=self.archive, instructions=NOMAD_FORMAT_INSTRUCTIONS
+        )
+        # 'Here you have some instructions to follow when writing your output: \n{instructions}\n'
+        return prompt
 
     def update_prompt(self):
         # self.archive = ...
