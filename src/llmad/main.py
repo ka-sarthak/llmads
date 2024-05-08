@@ -8,4 +8,4 @@ prompt_generator = PromptGenerator(
     raw_files_paths=['/home/josepizarro/LLM-Hackathon-2024/tests/data/example.out'],
 )
 template = prompt_generator.generate()
-llm_msg = template.invoke({'input': prompt_generator.raw_files_paths[0], 'archive': {}})
+llm_msg = template.invoke({'input': prompt_generator.raw_files_paths[0]})
