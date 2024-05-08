@@ -6,6 +6,7 @@ import warnings
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_community.document_loaders import TextLoader
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from nomad.metainfo import Section
 
 from llmad.utils import identify_mime_type, extract_json
@@ -77,37 +78,10 @@ class PromptGenerator(PromptGeneratorInput):
     This class contains methods for generating prompts based on the file type.
     """
 
-    # def __init__(self, *args, **kwargs) -> None:
-    #     self.archive = '{{"data":}}'
-
-    @staticmethod
-    def read_raw_files(filepath: List[str]) -> List[str]:
-        """
-        Read the raw files and return their content as a list of strings.
-
-        Args:
-            filepath (List[str]): The list of paths to the raw files.
-
-        Returns:
-            (List[str]): The list of strings containing the content of the raw files.
-        """
-
-        HANDLER = {
-            'text/plain': TextLoader,
-        }
-
-        content = []
-        for file in filepath:
-            mime_type = identify_mime_type(file)
-            if mime_type is None:
-                continue
-            loader = HANDLER.get(mime_type)
-            if loader is None:
-                continue
-            document_list = loader(file).load()
-            content.append(document_list[0].page_content)
-
-        return content
+    def __init__(self, *args, **kwargs) -> None:
+        self.archive = None
+        self.content = None
+        self.content_index = 0
 
     def generate(self) -> Optional[ChatPromptTemplate]:
         # Get the schema from 2 formats: Python section or YAML file
@@ -158,6 +132,56 @@ class PromptGenerator(PromptGeneratorInput):
         prompt_template = prompt | llm | extract_json
         return prompt_template
 
-    def update_prompt(self):
-        # self.archive = ...
-        pass
+    def update_prompt(self, new_archive):
+        self.archive = new_archive
+        self.content_index += 1
+
+        return self.generate()
+
+    def read_raw_files_with_chunking(self) -> List[str]:
+        """
+        Read the raw files and split them into chunks. The raw files converted to strings
+        and combined into one string. The combined string is then split into chunks.
+
+        Returns:
+            List[str]: The list of strings containing the data chunks.
+        """
+        # split the content into chunks
+        CHUNK_SIZE = 5000
+        CHUNK_OVERLAP = 100
+
+        self.read_raw_files()
+        content_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=CHUNK_SIZE,
+            chunk_overlap=CHUNK_OVERLAP,
+        )
+
+        content_chunks = content_splitter.create_documents(self.content)
+
+        # transform the chunk document into a list of strings
+        content_chunks_list = [chunk.page_content for chunk in content_chunks]
+
+        return content_chunks_list
+
+    def read_raw_files(self) -> None:
+        """
+        Read the raw files and convert them into strings. `self.content` is set as a list,
+        where each element is a string containing the content of one raw file.
+        """
+
+        HANDLER = {
+            'text/plain': TextLoader,
+        }
+
+        content = []
+        for file in self.raw_files_paths:
+            mime_type = identify_mime_type(file)
+            if mime_type is None:
+                continue
+            loader = HANDLER.get(mime_type)
+            if loader is None:
+                continue
+            document_list = loader(file).load()
+            content.append(document_list[0].page_content)
+
+        self.content = content
