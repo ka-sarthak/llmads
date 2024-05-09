@@ -19,34 +19,6 @@ TEST_FILE = (
 )
 
 
-class XRDSettings(BaseModel):
-    xray_tube_material: str = Field(description='Type of the X-ray tube')
-    xray_tube_current: float = Field(description='Current of the X-ray tube')
-    xray_tube_voltage: float = Field(description='Voltage of the X-ray tube')
-    kalpha_one: float = Field(description='Wavelength of the Kα1 line')
-    kalpha_two: float = Field(description='Wavelength of the Kα2 line')
-    ratio_kalphatwo_kalphaone: float = Field(description='Kα2/Kα1 intensity ratio')
-    kbeta: float = Field(description='Wavelength of the Kβ line')
-
-
-class XRDResult(BaseModel):
-    two_theta: list[float] = Field(description='The 2-theta range of the diffractogram')
-    intensity: list[float] = Field(
-        description='The count at each 2-theta value, dimensionless'
-    )
-    omega: float = Field(description='The omega range of the diffractogram')
-    phi: float = Field(description='The phi range of the diffractogram')
-    chi: float = Field(description='The chi range of the diffractogram')
-    source_peak_wavelength: float = Field(
-        description='Wavelength of the X-ray source. Used to convert from 2-theta to Q and vice-versa.'
-    )
-
-
-class XRayDiffraction(BaseModel):
-    settings: XRDSettings
-    result: XRDResult
-
-
 def read_raw_files(raw_files_paths) -> None:
     """
     Read the raw files and convert them into strings. `self.data.content` is set as a list,
