@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<DataContainer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" RawDataLength="1">
+  <CreatingVersion>6.5.0.0</CreatingVersion>
+  <Nodes />
+  <Identifier IdentificationType="RawData" UserName="8BN86X1" MachineName="8BN86X1">
+    <Guid>0cbca712-a028-4bed-b85e-3527ca506182</Guid>
+    <Comment />
+    <TimeStampCreated>2022-11-24T09:40:04.9826404+01:00</TimeStampCreated>
+    <AdditionalIdentifications IdentificationType="RawData" UserName="8BN86X1" MachineName="8BN86X1">
+      <Guid>1a40925b-6097-46d8-831c-cecb98206a71</Guid>
+      <Comment>Created by MeasurementScript</Comment>
+      <TimeStampCreated>2022-11-24T09:40:04.9826404+01:00</TimeStampCreated>
+    </AdditionalIdentifications>
+  </Identifier>
+  <ExpansionModelUsed>Standard</ExpansionModelUsed>
+  <MatchingModelUsed>Strict</MatchingModelUsed>
+  <RawDataReferenceList>
+    <string>Experiment0/RawData0.xml</string>
+  </RawDataReferenceList>
+  <ExperimentInfo xsi:type="HrxrdExperimentInfoData" LogicName="" VisibleName="">
+    <ApplicationType>HighResolution</ApplicationType>
+    <ApplicationTypeSpecific>V4BackwardCompatible</ApplicationTypeSpecific>
+    <KeyValueList>
+      <DataList />
+    </KeyValueList>
+    <Sequences />
+    <InstrumentDescription>
+      <InstrumentName>Institut für Kristallzüchtung Berlin</InstrumentName>
+      <IcsVersion>ICS,Version=6.05release/23-May-2016 build 8475 3507 3509 5080 (Jun  7 2016 14:23:40)</IcsVersion>
+      <SerialNo>207133</SerialNo>
+      <MaintenanceNumber>0</MaintenanceNumber>
+      <BootDevType>A25</BootDevType>
+      <BimlFile />
+    </InstrumentDescription>
+    <SampleAlignment baseType="AlignmentInfoData" LogicName="" VisibleName="">
+      <DiffracSetup>Positive</DiffracSetup>
+      <AlignmentRecords>
+        <AlignmentRecordInfoData LogicName="Theta" VisibleName="Omega" AlignFlag="Required" AxisId="Theta">
+          <Delta Unit="°" Value="1.5" />
+          <Position Unit="°" Value="0" />
+          <PositionOffset Unit="°" Value="0" />
+          <TheoreticalPosition Unit="°" Value="0" />
+        </AlignmentRecordInfoData>
+        <AlignmentRecordInfoData LogicName="TwoTheta" VisibleName="Theta2-H" AlignFlag="Required" AxisId="TwoTheta">
+          <Delta Unit="°" Value="1" />
+          <Position Unit="°" Value="0" />
+          <PositionOffset Unit="°" Value="0" />
+          <TheoreticalPosition Unit="°" Value="0" />
+        </AlignmentRecordInfoData>
+        <AlignmentRecordInfoData LogicName="Alpha_i" VisibleName="Alpha_i" AlignFlag="Off" AxisId="None">
+          <Delta Unit="°" Value="1" />
+          <Position Unit="°" Value="0" />
+          <PositionOffset Unit="°" Value="0" />
+          <TheoreticalPosition Unit="°" Value="0" />
+        </AlignmentRecordInfoData>
+        <AlignmentRecordInfoData LogicName="Chi" VisibleName="Psi-H" AlignFlag="Required" AxisId="Chi">
+          <Delta Unit="°" Value="0.75" />
+          <Position Unit="°" Value="0" />
+          <PositionOffset Unit="°" Value="0" />
+          <TheoreticalPosition Unit="°" Value="0" />
+        </AlignmentRecordInfoData>
+        <AlignmentRecordInfoData LogicName="Phi" VisibleName="Phi-H" AlignFlag="Off" AxisId="Phi">
+          <Delta Unit="°" Value="2" />
+          <Position Unit="°" Value="0" />
+          <PositionOffset Unit="°" Value="0" />
+          <TheoreticalPosition Unit="°" Value="0" />
+        </AlignmentRecordInfoData>
+        <AlignmentRecordInfoData LogicName="BeamTranslation" VisibleName="Beam-H" AlignFlag="Off" AxisId="None">
+          <Delta Unit="mm" Value="1" />
+          <Position Unit="mm" Value="0" />
+          <PositionOffset Unit="mm" Value="0" />
+          <TheoreticalPosition Unit="mm" Value="0" />
+        </AlignmentRecordInfoData>
+        <AlignmentRecordInfoData LogicName="X" VisibleName="X" AlignFlag="Off" AxisId="X">
+          <Delta Unit="mm" Value="10" />
+          <Position Unit="mm" Value="0" />
+          <PositionOffset Unit="mm" Value="0" />
+          <TheoreticalPosition Unit="mm" Value="0" />
+        </AlignmentRecordInfoData>
+        <AlignmentRecordInfoData LogicName="Y" VisibleName="Y" AlignFlag="Off" AxisId="Y">
+          <Delta Unit="mm" Value="10" />
+          <Position Unit="mm" Value="0" />
+          <PositionOffset Unit="mm" Value="0" />
+          <TheoreticalPosition Unit="mm" Value="0" />
+        </AlignmentRecordInfoData>
+        <AlignmentRecordInfoData LogicName="Z" VisibleName="Z" AlignFlag="Required" AxisId="Z">
+          <Delta Unit="mm" Value="1" />
+          <Position Unit="mm" Value="0" />
+          <PositionOffset Unit="mm" Value="0" />
+          <TheoreticalPosition Unit="mm" Value="0" />
+        </AlignmentRecordInfoData>
+      </AlignmentRecords>
+      <WaveLength Unit="Å" Value="1.5406" />
+      <SubstrateLayer LogicName="Si (no database)" VisibleName="Si (no database)">
+        <Lattice baseType="InfoData" LogicName="" VisibleName="" CrystalSystem="Cubic" A="0.5431" B="0.5431" C="0.5431" Alpha="90" Beta="90" Gamma="90" Unit="nm" UnitAngles="°" />
+        <SurfaceNormal H="0" K="0" L="1" />
+        <Azimuth H="1" K="1" L="0" />
+      </SubstrateLayer>
+      <Incidence>Symmetric</Incidence>
+      <Reflection H="0" K="0" L="0" />
+      <TauBragg Unit="°" Value="0" />
+      <Omega Unit="°" Value="0" />
+      <ThetaBragg Unit="°" Value="0" />
+      <TwoThetaBragg Unit="°" Value="0" />
+      <Tau Unit="°" Value="0" />
+    </SampleAlignment>
+    <LayeredMaterial baseType="MaterialInfoData" LogicName="Commander Sample ID" VisibleName="Commander Sample ID">
+      <Layers>
+        <LayerInfoData LogicName="Si (no database)" VisibleName="Si (no database)">
+          <Lattice baseType="InfoData" LogicName="" VisibleName="" CrystalSystem="Cubic" A="0.5431" B="0.5431" C="0.5431" Alpha="90" Beta="90" Gamma="90" Unit="nm" UnitAngles="°" />
+          <SurfaceNormal H="0" K="0" L="1" />
+          <Azimuth H="1" K="1" L="0" />
+        </LayerInfoData>
+      </Layers>
+    </LayeredMaterial>
+  </ExperimentInfo>
+  <MeasurementInfo UserName="Lab Manager" Site="" Comment="" SampleName="Commander Sample ID" ScriptName="" BsmlFileName="C:\ProgramData\Bruker AXS\Experiments\COMMANDER_MEASUREMENT_8BN86X1.bsml" SamplePosition="1A01" UserTaskFile="" />
+  <ReferencedMeasurements />
+  <EvalInfoList />
+  <TotalMeasurementTime Unit="s" Value="25.315845443" />
+</DataContainer>
