@@ -1,4 +1,4 @@
-# LLM-Hackathon-2024
+# LLMads
 
 ## Development
 The package is still under development and we welcome your contributions. To start with
