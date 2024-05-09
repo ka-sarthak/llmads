@@ -99,10 +99,12 @@ def get_input_data(chunking: bool = False):
     """
     Get the input data from the test file.
     """
-    test_file_path = os.path.join(CURRENT_DIR, TEST_FILE)
+    test_file_path = []
+    for file in TEST_FILES:
+        test_file_path.append(os.path.join(CURRENT_DIR, file))
     if chunking:
-        return read_raw_files_with_chunking([test_file_path])
-    return read_raw_files([test_file_path])
+        return read_raw_files_with_chunking(test_file_path)
+    return read_raw_files(test_file_path)
 
 
 class HULlama:
