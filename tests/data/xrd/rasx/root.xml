@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Root Version="1.1.0.0">
+  <Data0 Type="Profile">
+    <ContentHashList Name="Profile0.txt" ContentHash="5959737c3c73ff4b5c9569eb5f60f9ed" />
+    <ContentHashList Name="MesurementConditions0.xml" ContentHash="ef0ea1ea8379bebcfa6b8745659a5daf" />
+  </Data0>
+  <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+    <SignedInfo>
+      <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" />
+      <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" />
+      <Reference URI="">
+        <Transforms>
+          <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" />
+        </Transforms>
+        <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+        <DigestValue>Tlz3KdmC8aUWwnSxN1PGGuCNTro=</DigestValue>
+      </Reference>
+    </SignedInfo>
+    <SignatureValue>MOKKCj0h6+nsBg3Oxk6XlbX9UkBg+AIRosL9QZXitgkYx5NJWLdhefRCllnWj0YDch4bVG5MCkfLQz38Ib3+ImIZx2ssPkbcE/SXUh8yvZQW9kt/m1cpc6PubxpLbodT3Ryg/pZ+XyuYVtX+cViwf4U6HmmhJvDwVJKKgP1joRc=</SignatureValue>
+    <KeyInfo>
+      <KeyValue>
+        <RSAKeyValue>
+          <Modulus>p/Wksr0ui+X+nvEMcce59C2snanh9vCSffbi2GaEDlVGbnLERUP2pHbnkIQVc2FKi2EtWRZzl7YO7sfkPyvcvl2G9Vax4nOWsjh718CXSGpG+N4672uSkh2iiAFHz3T7KXDqcDKMXIJaZn5NuLBQthoewT7qIlnNds4jIfgM4G0=</Modulus>
+          <Exponent>AQAB</Exponent>
+        </RSAKeyValue>
+      </KeyValue>
+    </KeyInfo>
+  </Signature>
+</Root>
