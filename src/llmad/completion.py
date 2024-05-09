@@ -1,22 +1,23 @@
 import os
-from pydantic.v1 import BaseModel, Field
+from typing import TYPE_CHECKING
 
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import PydanticOutputParser
 from langchain_community.llms.ollama import Ollama
+from langchain_groq import ChatGroq
 from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_groq import ChatGroq
-
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import PydanticOutputParser
 
 from llmad.utils import identify_mime_type
+from llmad.data_model import XRDSettings, XRDResult, XRayDiffraction
 
-CHUNK_SIZE = 5000
-CHUNK_OVERLAP = 100
+if TYPE_CHECKING:
+    from pydantic import BaseModel
+
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-TEST_FILE = (
+TEST_FILES = [
     '../../tests/data/xrd/m82762_rc1mm_1_16dg_src_slit_phi-101_3dg_-420_mesh_long.xrdml'
-)
+]
 
 
 def read_raw_files(raw_files_paths) -> None:
@@ -27,6 +28,7 @@ def read_raw_files(raw_files_paths) -> None:
 
     HANDLER = {
         'text/plain': TextLoader,
+        'text/xml': TextLoader,
     }
 
     content = []
@@ -38,7 +40,7 @@ def read_raw_files(raw_files_paths) -> None:
         if loader is None:
             continue
         document_list = loader(file).load()
-        content.append(document_list[0].page_content)
+        content.append(document_list[0].page_content[:10000])
 
     return content
 
@@ -84,20 +86,20 @@ class HULlama:
     Model for llama3 hosted at HU.
     """
 
-    def __init__(self):
+    def __init__(self, schema: 'BaseModel'):
         llm = Ollama(model='llama3:70b')
         llm.base_url = 'http://172.28.105.30/backend'
         self.llm = llm
+        self.schema = schema
 
     def generate_prompt(
         self,
         content: list[str],
-        schema: BaseModel = XRayDiffraction,
     ):
         """
         Generate a prompt for the given content.
         """
-        output_parser = PydanticOutputParser(pydantic_object=schema)
+        output_parser = PydanticOutputParser(pydantic_object=self.schema)
 
         for chunk in content:
             prompt = ChatPromptTemplate.from_messages(
@@ -142,11 +144,12 @@ class HULlama:
 
 
 class ChatGroqLlamaStructured:
-    def __init__(self, schema: BaseModel = XRayDiffraction):
+    def __init__(self, schema: 'BaseModel'):
         llm = ChatGroq(model='llama3-8b-8192')
         self.llm = llm.with_structured_output(schema)
+        self.schema = schema
 
-    def generate_prompt(self, content: list[str]):
+    def generate_prompt(self, content: list):
         for chunk in content:
             prompt = ChatPromptTemplate.from_messages(
                 [
@@ -183,7 +186,8 @@ class ChatGroqLlamaStructured:
 if __name__ == '__main__':
     input_data = get_input_data(chunking=True)
 
-    model = ChatGroqLlamaStructured()
+    schema = XRDSettings
+    model = ChatGroqLlamaStructured(schema=schema)
 
-    for response in model.generate_response(input_data):
+    for response in model.generate_response(input_data, history=True):
         print(response)
