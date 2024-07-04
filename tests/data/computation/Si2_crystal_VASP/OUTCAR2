@@ -1,0 +1,12 @@
+ vasp.5.4.4.18Apr17-6-g9f103f2a35 (build Oct  1 2021 11:57:32) complex
+ executed on        HPECrayEX-GNU date 2022.01.28  14:50:47
+ running on  128 total cores
+ distrk:  each k-point on   64 cores,    2 groups
+ distr:  one band on NCORES_PER_BAND=  16 cores,    4 groups
+
+
+--------------------------------------------------------------------------------------------------------
+
+
+ INCAR:
+ POTCAR:    PAW_PBE Si 05Jan2001

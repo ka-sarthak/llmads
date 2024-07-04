@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<ExperimentCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" EstimatedTotalTime="2501" ScriptName="">
+  <CreatingVersion>6.5.0.0</CreatingVersion>
+  <Identifier IdentificationType="ExperimentCollection" UserName="8BN86X1" MachineName="8BN86X1">
+    <Guid>783c036e-a63b-486c-a912-50a796934de6</Guid>
+    <Comment />
+    <TimeStampCreated>2022-11-24T09:40:01.0126349+01:00</TimeStampCreated>
+  </Identifier>
+  <ExperimentContainerItems>
+    <ApplicationType>HighResolution</ApplicationType>
+    <ApplicationTypeSpecific>V4BackwardCompatible</ApplicationTypeSpecific>
+    <AppInfo AppType="HighResolution" AppTypeSpecific="V4BackwardCompatible" DatabaseSampleID="" />
+    <EstimatedTime Unit="s" Value="2501" />
+    <MatchingModelUsed>Strict</MatchingModelUsed>
+  </ExperimentContainerItems>
+  <EstimatedTime Unit="s" Value="0" />
+</ExperimentCollection>
