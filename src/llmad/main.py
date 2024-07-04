@@ -9,6 +9,6 @@ model = MODEL(schema=SCHEMA)
 chunk = 1
 for response in model.generate_response(input_data, history=True):
     print(
-        f'Chunk {chunk} processed. LLM response of type {type(response)}:\n{response}'
+        f'Chunk {chunk} processed. LLM response of type {type(response)}:\n{response}\n'
     )
     chunk += 1
