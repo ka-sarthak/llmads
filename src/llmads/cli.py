@@ -1,8 +1,8 @@
 import click
-from llmad.utils import get_input_data
-from llmad.config import Config
-from llmad.data_model import XRDSettings, XRDResult, XRayDiffraction
-from llmad.llm_model import ChatGroqLlamaStructured, HULlama
+from llmads.utils import get_input_data
+from llmads.config import Config
+from llmads.data_model import XRDSettings, XRDResult, XRayDiffraction
+from llmads.llm_model import ChatGroqLlamaStructured, HULlama
 
 
 @click.command()

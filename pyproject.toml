@@ -11,7 +11,7 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "License :: OSI Approved :: MIT License",
 ]
-name = "llmad"
+name = "llmads"
 description = "A NOMAD project for implementing LLMs (using LLAMA3) to parse input and output files into the NOMAD structure schemas."
 dynamic = ["version"]
 readme = "README.md"
@@ -38,7 +38,7 @@ dependencies = [
 ]
 
 [project.scripts]
-llmad = "llmad.cli:run_cli"
+llmads = "llmads.cli:run_cli"
 
 [project.urls]
 Repository = "https://github.com/ka-sarthak/LLM-Hackathon-2024"
@@ -47,7 +47,7 @@ Repository = "https://github.com/ka-sarthak/LLM-Hackathon-2024"
 dev = ["ruff", "pytest", "structlog==22.3.0"]
 
 [tool.ruff]
-include = ["src/llmad/*.py", "tests/*.py"]
+include = ["src/llmads/*.py", "tests/*.py"]
 lint.select = [
     "E",  # pycodestyle
     "W",  # pycodestyle
