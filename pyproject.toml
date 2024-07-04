@@ -25,6 +25,7 @@ authors = [
 ]
 license = { file = "LICENSE" }
 dependencies = [
+    "click",
     "pydantic",
     "langchain",
     "langchain-core",
@@ -35,6 +36,9 @@ dependencies = [
     "langchain-groq",
     "langchain_openai",
 ]
+
+[project.scripts]
+llmad = "llmad.cli:run_cli"
 
 [project.urls]
 Repository = "https://github.com/ka-sarthak/LLM-Hackathon-2024"
