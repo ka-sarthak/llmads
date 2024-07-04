@@ -1,5 +1,6 @@
 from typing import (
     TYPE_CHECKING,
+    Union,
     Generator,
 )
 from langchain_community.llms.ollama import Ollama
@@ -23,7 +24,7 @@ class HULlama:
         self.llm = llm
         self.schema = schema
 
-    def generate_prompt(self, content: list[str]) -> Generator[str]:
+    def generate_prompt(self, content: list[str]) -> Generator[str, None, None]:
         """
         Generate a prompt for the given content.
 
@@ -65,7 +66,7 @@ class HULlama:
             )
             yield prompt
 
-    def generate_response(self, content: list[str]) -> Generator[str]:
+    def generate_response(self, content: list[str]) -> Generator[str, None, None]:
         """
         Generate a response for the given prompt.
 
@@ -94,7 +95,7 @@ class ChatGroqLlamaStructured:
         self.llm = llm.with_structured_output(schema)
         self.schema = schema
 
-    def generate_prompt(self, content: list[str]) -> Generator[str]:
+    def generate_prompt(self, content: list[str]) -> Generator[str, None, None]:
         """
         Generate a prompt for the given content.
 
@@ -126,7 +127,7 @@ class ChatGroqLlamaStructured:
             ).partial(input_data=chunk)
             yield prompt
 
-    def generate_prompt_with_history(self, content: list[str]) -> Generator[str]:
+    def generate_prompt_with_history(self, content: list[str]) -> Generator[str, None, None]:
         """
         Generate a prompt for the given content including the previous response.
 
@@ -162,7 +163,7 @@ class ChatGroqLlamaStructured:
 
     def generate_response(
         self, content: list[str], history: bool = False
-    ) -> Generator[str, dict]:
+    ) -> Generator[Union[str, dict],None,None]:
         """
         Generate a response for the given content.
 
