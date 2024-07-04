@@ -2,7 +2,7 @@ file:
   test_file: ./tests/data/xrd/xrdml
 
 chunking:
-  perform_chunking: True
+  perform_chunking: False
   chunk_size: 4000
   chunk_overlap: 10
 

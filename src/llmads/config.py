@@ -13,9 +13,9 @@ class Config:
 
     def set_defaults(self):
         self.test_file_path = './tests/data/xrd/xrdml'
-        self.chunking = True
-        self.chunk_size = 4000
-        self.chunk_overlap = 10
+        self.chunking = False
+        self.chunk_size = None
+        self.chunk_overlap = None
         self.schema = 'XRDSettings'
         self.llm_model = 'ChatGroqLlamaStructured'
         self.history = True

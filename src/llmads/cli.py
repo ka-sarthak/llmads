@@ -23,7 +23,6 @@ def run_cli(subcommand, config_path):
 
 def run(config_path):
     config = Config(config_path)
-    print(config.__dict__)
 
     if config.schema == 'XRDSettings':
         schema = XRDSettings
