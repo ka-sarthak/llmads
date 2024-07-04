@@ -3,6 +3,7 @@ from typing import (
     Union,
     Generator,
 )
+import json
 from langchain_community.llms.ollama import Ollama
 from langchain_groq import ChatGroq
 
@@ -177,7 +178,7 @@ class ChatGroqLlamaStructured:
         Yields:
             str: The response for the given content.
         """
-        response = 'None'
+        response = {}
 
         if history:
             prompt_generator = self.generate_prompt_with_history
@@ -188,7 +189,8 @@ class ChatGroqLlamaStructured:
             try:
                 pipeline = prompt | self.llm
                 if history:
-                    response = pipeline.invoke({'previous_response': response})
+                    if isinstance(response, dict):
+                        response = pipeline.invoke({'previous_response': json.dumps(response)})
                 else:
                     response = pipeline.invoke({})
 
