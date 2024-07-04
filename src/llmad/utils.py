@@ -11,6 +11,12 @@ from llmad.config import CHUNK_SIZE, CHUNK_OVERLAP, TEST_FILES_PATH, CURRENT_DIR
 def identify_mime_type(file_path: str) -> str:
     """
     This function identifies the mime type based on file header.
+
+    Args:
+        file_path (str): The path to the file.
+
+    Returns:
+        str: The mime type of the file.
     """
     with open(file_path, 'r', encoding='utf-8') as f:
         file_header = f.read(100)
@@ -23,10 +29,15 @@ def identify_mime_type(file_path: str) -> str:
     return mime_type
 
 
-def read_raw_files(raw_files_paths) -> None:
+def read_raw_files(raw_files_paths) -> list[str]:
     """
-    Read the raw files and convert them into strings. `self.data.content` is set as a list,
-    where each element is a string containing the content of one raw file.
+    Read the raw files and convert them into strings.
+
+    Args:
+        raw_files_paths (List[str]): The list of paths to the raw files.
+
+    Returns:
+        List[str]: The list of strings containing the data.
     """
 
     HANDLER = {
@@ -58,10 +69,12 @@ def read_raw_files_with_chunking(raw_files_paths):
     Read the raw files and split them into chunks. The raw files converted to strings
     and combined into one string. The combined string is then split into chunks.
 
+    Args:
+        raw_files_paths (List[str]): The list of paths to the raw files.
+
     Returns:
         List[str]: The list of strings containing the data chunks.
     """
-    # split the content into chunks
 
     content = read_raw_files(raw_files_paths=raw_files_paths)
     content_splitter = RecursiveCharacterTextSplitter(
@@ -71,7 +84,6 @@ def read_raw_files_with_chunking(raw_files_paths):
 
     content_chunks = content_splitter.create_documents(content)
 
-    # transform the chunk document into a list of strings
     content_chunks_list = [chunk.page_content for chunk in content_chunks]
 
     return content_chunks_list
@@ -80,6 +92,12 @@ def read_raw_files_with_chunking(raw_files_paths):
 def get_input_data(chunking: bool = False):
     """
     Get the input data from the test file.
+
+    Args:
+        chunking (bool): Whether to split the content into chunks.
+
+    Returns:
+        List[str]: The list of strings containing the data.
     """
     abs_file_paths = []
     for file in os.listdir(os.path.join(CURRENT_DIR, TEST_FILES_PATH)):

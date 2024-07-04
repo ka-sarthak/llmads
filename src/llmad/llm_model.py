@@ -1,4 +1,7 @@
-from typing import TYPE_CHECKING
+from typing import (
+    TYPE_CHECKING,
+    Generator,
+)
 from langchain_community.llms.ollama import Ollama
 from langchain_groq import ChatGroq
 
@@ -20,12 +23,15 @@ class HULlama:
         self.llm = llm
         self.schema = schema
 
-    def generate_prompt(
-        self,
-        content: list[str],
-    ):
+    def generate_prompt(self, content: list[str]) -> Generator[str]:
         """
         Generate a prompt for the given content.
+
+        Args:
+            content (list[str]): The list of strings containing the data.
+
+        Yields:
+            str: The prompt for the given content.
         """
         output_parser = PydanticOutputParser(pydantic_object=self.schema)
 
@@ -59,9 +65,15 @@ class HULlama:
             )
             yield prompt
 
-    def generate_response(self, content):
+    def generate_response(self, content: list[str]) -> Generator[str]:
         """
         Generate a response for the given prompt.
+
+        Args:
+            content (list[str]): The list of strings containing the data.
+
+        Yields:
+            str: The response for the given content.
         """
         resp = None
         for prompt in self.generate_prompt(content):
@@ -72,12 +84,26 @@ class HULlama:
 
 
 class ChatGroqLlamaStructured:
+    """
+    Model for llama3-8b-8192 provided by ChatGroq. It is used to generate structured
+    output.
+    """
+
     def __init__(self, schema: 'BaseModel'):
         llm = ChatGroq(model='llama3-8b-8192', temperature=0.7)
         self.llm = llm.with_structured_output(schema)
         self.schema = schema
 
-    def generate_prompt(self, content: list):
+    def generate_prompt(self, content: list[str]) -> Generator[str]:
+        """
+        Generate a prompt for the given content.
+
+        Args:
+            content (list[str]): The list of strings containing the data.
+
+        Yields:
+            str: The prompt for the given content.
+        """
         for chunk in content:
             prompt = ChatPromptTemplate.from_messages(
                 [
@@ -100,7 +126,16 @@ class ChatGroqLlamaStructured:
             ).partial(input_data=chunk)
             yield prompt
 
-    def generate_prompt_with_history(self, content: list):
+    def generate_prompt_with_history(self, content: list[str]) -> Generator[str]:
+        """
+        Generate a prompt for the given content including the previous response.
+
+        Args:
+            content (list[str]): The list of strings containing the data.
+
+        Yields:
+            str: The prompt for the given content.
+        """
         for chunk in content:
             prompt = ChatPromptTemplate.from_messages(
                 [
@@ -125,8 +160,21 @@ class ChatGroqLlamaStructured:
             ).partial(input_data=chunk)
             yield prompt
 
-    def generate_response(self, content, history=False):
-        resp = 'None'
+    def generate_response(
+        self, content: list[str], history: bool = False
+    ) -> Generator[str, dict]:
+        """
+        Generate a response for the given content.
+
+        Args:
+            content (list[str]): The list of strings containing the data.
+            history (bool, optional): Whether to include the previous response in the
+                prompt. Defaults to False.
+
+        Yields:
+            str: The response for the given content.
+        """
+        response = 'None'
 
         if history:
             prompt_generator = self.generate_prompt_with_history
@@ -137,10 +185,10 @@ class ChatGroqLlamaStructured:
             try:
                 pipeline = prompt | self.llm
                 if history:
-                    resp = pipeline.invoke({'previous_response': resp})
+                    response = pipeline.invoke({'previous_response': response})
                 else:
-                    resp = pipeline.invoke({})
+                    response = pipeline.invoke({})
 
-                yield resp
+                yield response
             except Exception as e:
                 yield e
