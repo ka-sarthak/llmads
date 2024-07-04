@@ -1,4 +1,3 @@
-import os
 import yaml
 import dotenv
 
@@ -46,6 +45,3 @@ class Config:
 
     def load_api_keys(self):
         dotenv.load_dotenv()
-
-
-config = Config()

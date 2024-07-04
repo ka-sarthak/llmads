@@ -5,8 +5,6 @@ import magic
 from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-from llmad.config import config
-
 
 def identify_mime_type(file_path: str) -> str:
     """
@@ -64,13 +62,17 @@ def read_raw_files(raw_files_paths) -> list[str]:
     return content
 
 
-def read_raw_files_with_chunking(raw_files_paths):
+def read_raw_files_with_chunking(
+    raw_files_paths, chunk_size: int = 1000, chunk_overlap: int = 100
+):
     """
     Read the raw files and split them into chunks. The raw files converted to strings
     and combined into one string. The combined string is then split into chunks.
 
     Args:
         raw_files_paths (List[str]): The list of paths to the raw files.
+        chunk_size (int): The size of the chunks.
+        chunk_overlap (int): The overlap between the chunks.
 
     Returns:
         List[str]: The list of strings containing the data chunks.
@@ -78,8 +80,8 @@ def read_raw_files_with_chunking(raw_files_paths):
 
     content = read_raw_files(raw_files_paths=raw_files_paths)
     content_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=config.chunk_size,
-        chunk_overlap=config.chunk_overlap,
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap,
     )
 
     content_chunks = content_splitter.create_documents(content)
@@ -89,19 +91,25 @@ def read_raw_files_with_chunking(raw_files_paths):
     return content_chunks_list
 
 
-def get_input_data(chunking: bool = False):
+def get_input_data(
+    test_file_path,
+    chunking: bool = False,
+    chunk_size: int = 1000,
+    chunk_overlap: int = 100,
+):
     """
     Get the input data from the test file.
 
     Args:
+        test_file_path (str): The path to the test file.
         chunking (bool): Whether to split the content into chunks.
 
     Returns:
         List[str]: The list of strings containing the data.
     """
     abs_file_paths = []
-    for file in os.listdir(os.path.join(config.test_file_path)):
-        abs_file_paths.append(os.path.join(config.test_file_path, file))
+    for file in os.listdir(os.path.join(test_file_path)):
+        abs_file_paths.append(os.path.join(test_file_path, file))
     if chunking:
-        return read_raw_files_with_chunking(abs_file_paths)
+        return read_raw_files_with_chunking(abs_file_paths, chunk_size, chunk_overlap)
     return read_raw_files(abs_file_paths)
