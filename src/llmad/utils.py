@@ -101,9 +101,7 @@ def get_input_data(chunking: bool = False):
     """
     abs_file_paths = []
     for file in os.listdir(os.path.join(config.test_file_path)):
-        abs_file_paths.append(
-            os.path.join(config.test_file_path, file)
-        )
+        abs_file_paths.append(os.path.join(config.test_file_path, file))
     if chunking:
         return read_raw_files_with_chunking(abs_file_paths)
     return read_raw_files(abs_file_paths)

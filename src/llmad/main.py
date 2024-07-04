@@ -7,11 +7,11 @@ from llmad.llm_model import ChatGroqLlamaStructured, HULlama
 def main():
     config = Config('llmad.yaml')
 
-    if config.schema == "XRDSettings":
+    if config.schema == 'XRDSettings':
         schema = XRDSettings
-    elif config.schema == "XRDResult":
+    elif config.schema == 'XRDResult':
         schema = XRDResult
-    elif config.schema == "XRayDiffraction":
+    elif config.schema == 'XRayDiffraction':
         schema = XRayDiffraction
     else:
         raise ValueError(f'Invalid schema "{config.schema}".')

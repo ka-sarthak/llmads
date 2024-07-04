@@ -127,7 +127,9 @@ class ChatGroqLlamaStructured:
             ).partial(input_data=chunk)
             yield prompt
 
-    def generate_prompt_with_history(self, content: list[str]) -> Generator[str, None, None]:
+    def generate_prompt_with_history(
+        self, content: list[str]
+    ) -> Generator[str, None, None]:
         """
         Generate a prompt for the given content including the previous response.
 
@@ -163,7 +165,7 @@ class ChatGroqLlamaStructured:
 
     def generate_response(
         self, content: list[str], history: bool = False
-    ) -> Generator[Union[str, dict],None,None]:
+    ) -> Generator[Union[str, dict], None, None]:
         """
         Generate a response for the given content.
 
