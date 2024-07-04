@@ -1,0 +1,12 @@
+file:
+  test_file: ./tests/data/xrd/xrdml
+
+chunking:
+  perform_chunking: True
+  chunk_size: 4000
+  chunk_overlap: 10
+
+model:
+  schema: XRDSettings
+  llm: ChatGroqLlamaStructured
+  history: True

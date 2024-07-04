@@ -5,7 +5,7 @@ import magic
 from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-from llmad.config import CHUNK_SIZE, CHUNK_OVERLAP, TEST_FILES_PATH, CURRENT_DIR
+from llmad.config import config
 
 
 def identify_mime_type(file_path: str) -> str:
@@ -78,8 +78,8 @@ def read_raw_files_with_chunking(raw_files_paths):
 
     content = read_raw_files(raw_files_paths=raw_files_paths)
     content_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=CHUNK_SIZE,
-        chunk_overlap=CHUNK_OVERLAP,
+        chunk_size=config.chunk_size,
+        chunk_overlap=config.chunk_overlap,
     )
 
     content_chunks = content_splitter.create_documents(content)
@@ -100,8 +100,10 @@ def get_input_data(chunking: bool = False):
         List[str]: The list of strings containing the data.
     """
     abs_file_paths = []
-    for file in os.listdir(os.path.join(CURRENT_DIR, TEST_FILES_PATH)):
-        abs_file_paths.append(os.path.join(CURRENT_DIR, TEST_FILES_PATH, file))
+    for file in os.listdir(os.path.join(config.test_file_path)):
+        abs_file_paths.append(
+            os.path.join(config.test_file_path, file)
+        )
     if chunking:
         return read_raw_files_with_chunking(abs_file_paths)
     return read_raw_files(abs_file_paths)
