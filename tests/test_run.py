@@ -1,9 +1,9 @@
-from llmads.cli import run
+from llmads.cli import parse
 
 
-def test_run():
-    assert run('llmad.yaml') == None
+def test_parse():
+    assert parse('llmad.yaml') == None
 
 
 if __name__ == '__main__':
-    test_run()
+    test_parse()

@@ -38,7 +38,7 @@ dependencies = [
 ]
 
 [project.scripts]
-llmads = "llmads.cli:run_cli"
+llmads = "llmads.cli:cli"
 
 [project.urls]
 Repository = "https://github.com/ka-sarthak/LLM-Hackathon-2024"

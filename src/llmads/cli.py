@@ -12,16 +12,16 @@ from llmads.llm_model import ChatGroqLlamaStructured, HULlama
     default='llmad.yaml',
     help='Path of the YAML config file.',
 )
-@click.argument('subcommand', type=click.Choice(['run']))
-def run_cli(subcommand, config_path):
+@click.argument('subcommand', type=click.Choice(['parse']))
+def cli(subcommand, config_path):
     try:
-        if subcommand == 'run':
-            click.echo(run(config_path))
+        if subcommand == 'parse':
+            click.echo(parse(config_path))
     except Exception as e:
         click.echo(f'ERROR: {e}')
 
 
-def run(config_path):
+def parse(config_path):
     config = Config(config_path)
 
     if config.schema == 'XRDSettings':
