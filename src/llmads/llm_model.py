@@ -92,7 +92,7 @@ class ChatGroqLlamaStructured:
     """
 
     def __init__(self, schema: 'BaseModel'):
-        llm = ChatGroq(model='llama3-8b-8192', temperature=0.7)
+        llm = ChatGroq()
         self.llm = llm.with_structured_output(schema)
         self.schema = schema
 
@@ -190,7 +190,9 @@ class ChatGroqLlamaStructured:
                 pipeline = prompt | self.llm
                 if history:
                     if isinstance(response, dict):
-                        response = pipeline.invoke({'previous_response': json.dumps(response)})
+                        response = pipeline.invoke(
+                            {'previous_response': json.dumps(response)}
+                        )
                 else:
                     response = pipeline.invoke({})
 
