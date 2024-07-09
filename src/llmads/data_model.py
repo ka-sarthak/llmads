@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic.v1.main import BaseModel, Field
 
 
 class XRDSettings(BaseModel):
@@ -40,7 +40,6 @@ class XRDResult(BaseModel):
         description='The start and end of chi value (or single value).'
     )
     chi_step: float = Field(description='The step size of chi values.')
-    source_peak_wavelength: float = Field(description='Wavelength of the X-ray source.')
 
 
 class XRayDiffraction(BaseModel):
