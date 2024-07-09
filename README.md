@@ -21,7 +21,7 @@ To use our LLM-based parser on your data XRD data files, follow these steps:
   modify the `test_file_path` to your XRD file.
 4. Run the parser.
     ```sh
-    llmads run
+    llmads parse
     ```
 
 To use the LLM models, you need API keys for ChatGroq. Add your API keys in the `.env`
