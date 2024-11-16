@@ -41,7 +41,7 @@ dependencies = [
 llmads = "llmads.cli:cli"
 
 [project.urls]
-Repository = "https://github.com/ka-sarthak/LLM-Hackathon-2024"
+Repository = "https://github.com/ka-sarthak/llmads"
 
 [project.optional-dependencies]
 dev = ["ruff", "pytest", "structlog==22.3.0"]
