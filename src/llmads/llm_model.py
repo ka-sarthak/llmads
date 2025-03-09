@@ -92,7 +92,7 @@ class ChatGroqLlamaStructured:
     """
 
     def __init__(self, schema: 'BaseModel'):
-        llm = ChatGroq()
+        llm = ChatGroq(model='llama-3.3-70b-versatile')
         self.llm = llm.with_structured_output(schema)
         self.schema = schema
 
