@@ -29,7 +29,9 @@ file in the root folder.
 ```
 GROQ_API_KEY=<YOUR_API_KEY>
 ```
-These keys will be loaded automatically by the `config` module.
+These keys will be loaded automatically by the `config` module. Read more
+[here](https://github.com/theskumar/python-dotenv) how it is
+done using `dotenv` package.
 
 ## Background
 The project started during the LLM Hackathon for Applications in Materials and Chemistry 2024.

@@ -3,6 +3,7 @@ from llmads.utils import get_input_data
 from llmads.config import Config
 from llmads.data_model import XRDSettings, XRDResult, XRayDiffraction
 from llmads.llm_model import ChatGroqLlamaStructured, HULlama
+import pprint
 
 
 @click.command()
@@ -48,7 +49,6 @@ def parse(config_path):
         config.chunk_overlap,
     )
     for response in model.generate_response(input_data):
-        print(
-            f'Chunk {chunk} processed. LLM response of type {type(response)}:\n{response}\n'
-        )
+        print(f'Chunk {chunk} processed. LLM response of type {type(response)}:')
+        pprint.pprint(f'{response.__dict__}\n')
         chunk += 1
