@@ -30,11 +30,9 @@ dependencies = [
     "langchain",
     "langchain-core",
     "langchain-community",
-    "langchain-chroma",
     "python-magic",
     "tiktoken",
     "langchain-groq",
-    "langchain_openai",
 ]
 
 [project.scripts]
